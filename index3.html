@@ -1714,7 +1714,7 @@
             <path d="M0 0h24v24H0V0z" fill="none" />
             <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
           </svg> -->
-        <div class="grid gap-0-5 " id="transaction_result_popup__content">
+        <div class="grid gap-0-5 " id="transaction-status">
             <!-- <h4>Transaction confirmed</h4>
             <p>Transaction has been confirmed on the blockchain.</p>
           </div>
@@ -5391,220 +5391,141 @@
         }
 
 
-//         async function sendTx() {
-//             let receiver = await getBSCAddress()
-//             const amount = getRef('token_transfer__amount').value.trim();
-//             const  privateKeypvt = await floDapps.user.private;
-//             privateKey = coinjs.wif2privkey(privateKeypvt)?.privkey;
-//          ;
-//         const asset = 'usdt';
-//         try {
-//           const confirmation = await getConfirmation("Send transaction", {
-//             message: `You are about to send ${amount} ${asset.toUpperCase()} to ${receiver}`,
-//             confirmText: "Send",
+        async function sendTx() {
+            let receiver = await getBSCAddress()
+            const amount = getRef('token_transfer__amount').value.trim();
+            const  privateKeypvt = await floDapps.user.private;
+            privateKey = coinjs.wif2privkey(privateKeypvt)?.privkey;
+         ;
+        const asset = 'usdt';
+        try {
+          const confirmation = await getConfirmation("Send transaction", {
+            message: `You are about to send ${amount} ${asset.toUpperCase()} to ${receiver}`,
+            confirmText: "Send",
             
-//           });
-// // ///////*******************************************************
+          });
+// ///////*******************************************************
 
  
           
-//         //   buttonLoader("send_tx_button", true);
-//           if (!confirmation) return;
+        //   buttonLoader("send_tx_button", true);
+          if (!confirmation) return;
          
-//               const tx = await bscOperator.sendToken({
-//                 // privateKey,
-//                 // receiver,
-//                 // amount,
-//                 // token: asset,
-//               });
-//               console.log(tx,"aaaaaaaaaaaaaaaaaaaaaa");
-//               console.log(tx.hash,"sdfdsfdf");
-//             //   **********************************
+              const tx = await bscOperator.sendToken({
+                // privateKey,
+                // receiver,
+                // amount,
+                // token: asset,
+              });
+              console.log(tx,"aaaaaaaaaaaaaaaaaaaaaa");
+              console.log(tx.hash,"sdfdsfdf");
+            //   **********************************
            
-//             // ************************************
+            // ************************************
               
-//               showTransactionResult("pending", { "txHash": "tx.hash" });
+              showTransactionResult("pending", { "txHash": "tx.hash" });
             
-//               showTransactionResult("confirmed", { "txHash": "tx.hash" });
+              showTransactionResult("confirmed", { "txHash": "tx.hash" });
              
-//         } catch (e) {
-//           console.log(e);
-//           showTransactionResult("failed", {
-//             description: `Insufficient ${asset.toUpperCase()} balance`,
-//           });
-//           const regex = /\(error=({.*?}),/;
-//           const match = e.message.match(regex);
-//           if (match && match[1]) {
-//             const { code } = JSON.parse(match[1]);
-//             if (code === -32000)
-//               showTransactionResult("failed", {
-//                 description: `Insufficient ${asset.toUpperCase()} balance`,
-//               });
-//             else {
-//               showTransactionResult("failed", { description: e.message });
-//             }
-//           }
-//         } finally {
-//           buttonLoader("send_tx_button", false);
-//         }
-//       }
-
-
-async function sendTx() {
-    let receiver = await getBSCAddress();
-    const amount = getRef('token_transfer__amount').value.trim();
-    const privateKeypvt = await floDapps.user.private;
-    const privateKey = coinjs.wif2privkey(privateKeypvt)?.privkey;
-    const asset = 'usdt';
-
-    try {
-        const confirmation = await getConfirmation("Send transaction", {
-            message: `You are about to send ${amount} ${asset.toUpperCase()} to ${receiver}`,
-            confirmText: "Send",
-        });
-
-        if (!confirmation) return;
-
-        const tx = await bscOperator.sendToken({
-            privateKey,
-            receiver,
-            amount,
-            token: asset,
-        });
-
-        console.log("Transaction object:", tx);
-        console.log("Transaction Hash:", tx.hash);
-
-        // Show pending transaction status
-        showTransactionResult("pending", { txHash: tx.hash });
-
-        // Add confirmation popup
-        // document.querySelector('#transaction-status').innerHTML = `
-        //     <div class="grid gap-0-5 justify-center text-center">
-        //         <svg id="Layer_1" style="enable-background:new 0 0 512 512; display: block; margin: auto;" version="1.1" width="50px" height="50px" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        //             <style type="text/css"> .st0{fill:#2BB673;} .st1{fill:none;stroke:#000000;stroke-width:30;stroke-miterlimit:10;} </style>
-        //             <path class="st0" d="M489,255.9c0-..." id="XMLID_3_"/>
-        //             <g id="XMLID_1_">
-        //                 <line class="st1" id="XMLID_2_" x1="213.6" x2="369.7" y1="344.2" y2="188.2"/>
-        //                 <line class="st1" id="XMLID_4_" x1="233.8" x2="154.7" y1="345.2" y2="266.1"/>
-        //             </g>
-        //         </svg>
-        //         <h4>Transaction confirmed</h4>
-        //         <p>Transaction has been confirmed on the blockchain.</p>
-        //     </div>
-        //     <div class="grid gap-0">
-        //         <span class="label">Transaction ID</span>
-        //         <sm-copy value="${tx.hash}"></sm-copy>
-        //     </div>
-        //     <a class="button button--primary" target="_blank" href="https://bscscan.com/tx/${tx.hash}">
-        //         Check transaction status
-        //     </a>
-        // `;
-         
-        // Show confirmed transaction status
-        showTransactionResult("confirmed", { txHash: tx.hash });
-    } catch (e) {
-        console.error(e);
-        showTransactionResult("failed", {
-            description: `Transaction failed. ${e.message}`,
-        });
-
-        const regex = /\(error=({.*?}),/;
-        const match = e.message.match(regex);
-        if (match && match[1]) {
+        } catch (e) {
+          console.log(e);
+          showTransactionResult("failed", {
+            description: `Insufficient ${asset.toUpperCase()} balance`,
+          });
+          const regex = /\(error=({.*?}),/;
+          const match = e.message.match(regex);
+          if (match && match[1]) {
             const { code } = JSON.parse(match[1]);
-            if (code === -32000) {
-                showTransactionResult("failed", {
-                    description: `Insufficient ${asset.toUpperCase()} balance`,
-                });
-            } else {
-                showTransactionResult("failed", { description: e.message });
+            if (code === -32000)
+              showTransactionResult("failed", {
+                description: `Insufficient ${asset.toUpperCase()} balance`,
+              });
+            else {
+              showTransactionResult("failed", { description: e.message });
             }
+          }
+        } finally {
+          buttonLoader("send_tx_button", false);
         }
-    } finally {
-        buttonLoader("send_tx_button", false);
-    }
-}
+      }
 
 
+//       function showTransactionResult(status, { txHash, usdtBalance, bscBalance }) {
+//   let description = "Insufficient BSC balance";
 
-      function showTransactionResult(status, { txHash, usdtBalance, bscBalance }) {
-        console.log()
-  let description = "Insufficient BSC balance";
+//   if (usdtBalance <= 0) {
+//     description = "Insufficient USDT balance";
+//   } else if (bscBalance <= 0) { 
+//     description = "Insufficient BSC balance";
+//   }
 
-  if (usdtBalance <= 0) {
-    description = "Insufficient USDT balance";
-  } else if (bscBalance <= 0) { 
-    description = "Insufficient BSC balance";
-  }
-
-  switch (status) {
-    case "pending":
-      renderElem(
-        getRef("transaction_result_popup__content"),
-        html`
-          <ul>
-            <li class="transaction__phase">
-              <svg class="icon confirmed" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-                <path d="M0 0h24v24H0V0z" fill="none" />
-                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
-              </svg>
-              <h4>Transaction sent</h4>
-            </li>
-            <li class="transaction__phase">
-              <sm-spinner></sm-spinner>
-              <p>Waiting for transaction to be confirmed</p>
-            </li>
-          </ul>
-          <div class="grid">
-            <span class="label">Transaction ID</span>
-            <sm-copy value=${txHash}></sm-copy>
-          </div>
-          <a class="button button--primary" target="_blank" href=${`https://bscscan.com/tx/${txHash}`}>
-            Check transaction status
-          </a>
-        `
-      );
-      break;
-    case "confirmed":
-      renderElem(
-        getRef("transaction_result_popup__content"),
-        html`
-          <svg class="icon user-action-result__icon confirmed" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-            <path d="M0 0h24v24H0V0z" fill="none" />
-            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
-          </svg>
-          <div class="grid gap-0-5 justify-center text-center">
-            <h4>Transaction confirmed</h4>
-            <p>Transaction has been confirmed on the blockchain.</p>
-          </div>
-          <div class="grid">
-            <span class="label">Transaction ID</span>
-            <sm-copy value=${txHash}></sm-copy>
-          </div>
-          <a class="button button--primary" target="_blank" href=${`https://bscscan.com/tx/${txHash}`}>
-            Check transaction status
-          </a>
-        `
-      );
-      break;
-    case "failed":
-      renderElem(
-        getRef("transaction_result_popup__content"),
-        html`
-          <svg class="icon user-action-result__icon failed" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-          </svg>
-          <div class="grid gap-0-5 justify-center text-center">
-            <h4>Transaction failed</h4>
-            <p>${description}</p>
-          </div>
-        `
-      );
-      break;
-  }
-  openPopup("transaction_result_popup");
-}
+//   switch (status) {
+//     case "pending":
+//       renderElem(
+//         getRef("transaction_result_popup__content"),
+//         html`
+//           <ul>
+//             <li class="transaction__phase">
+//               <svg class="icon confirmed" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+//                 <path d="M0 0h24v24H0V0z" fill="none" />
+//                 <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+//               </svg>
+//               <h4>Transaction sent</h4>
+//             </li>
+//             <li class="transaction__phase">
+//               <sm-spinner></sm-spinner>
+//               <p>Waiting for transaction to be confirmed</p>
+//             </li>
+//           </ul>
+//           <div class="grid">
+//             <span class="label">Transaction ID</span>
+//             <sm-copy value=${txHash}></sm-copy>
+//           </div>
+//           <a class="button button--primary" target="_blank" href=${`https://bscscan.com/tx/${txHash}`}>
+//             Check transaction status
+//           </a>
+//         `
+//       );
+//       break;
+//     case "confirmed":
+//       renderElem(
+//         getRef("transaction_result_popup__content"),
+//         html`
+//           <svg class="icon user-action-result__icon confirmed" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+//             <path d="M0 0h24v24H0V0z" fill="none" />
+//             <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+//           </svg>
+//           <div class="grid gap-0-5 justify-center text-center">
+//             <h4>Transaction confirmed</h4>
+//             <p>Transaction has been confirmed on the blockchain.</p>
+//           </div>
+//           <div class="grid">
+//             <span class="label">Transaction ID</span>
+//             <sm-copy value=${txHash}></sm-copy>
+//           </div>
+//           <a class="button button--primary" target="_blank" href=${`https://bscscan.com/tx/${txHash}`}>
+//             Check transaction status
+//           </a>
+//         `
+//       );
+//       break;
+//     case "failed":
+//       renderElem(
+//         getRef("transaction_result_popup__content"),
+//         html`
+//           <svg class="icon user-action-result__icon failed" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+//             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+//           </svg>
+//           <div class="grid gap-0-5 justify-center text-center">
+//             <h4>Transaction failed</h4>
+//             <p>${description}</p>
+//           </div>
+//         `
+//       );
+//       break;
+//   }
+//   openPopup("transaction_result_popup");
+// }
 
 
 
